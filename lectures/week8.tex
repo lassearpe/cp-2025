@@ -111,6 +111,10 @@
 \def\secondcircle{(1.4,1.4) circle (2cm)}
 \def\thirdcircle{(0:2.4) circle (2cm)}
 
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
 \section{Overview}
 
 \begin{frame}[fragile]
@@ -188,7 +192,7 @@
   \frametitle{Course Structure}
 
   \begin{itemize}
-  \item[\faVolumeUp] Lectures, with a few lectures taking place online through
+  \item[\faBullhorn] Few of the lectures are taking place online through
     videos. Check itslearning to see which lectures are held in presence.
   \item[\faSchool] Links and videos will appear on itslearning.
   \item[\faGithub] The code for the lectures and the exercises is on GitHub.
@@ -269,7 +273,7 @@
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Examples of Concurrency, one chef}
+  \frametitle{Case 1: one chef}
 
   \begin{center}
     \includegraphics[width=11cm,keepaspectratio]{media/lecture1-chef.png}
@@ -285,13 +289,13 @@
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Examples of Concurrency, one }
+  \frametitle{Case 1: one chef}
 
   \large{
   \begin{itemize}
   \item[\faBook]<1-> You don't need more than one chef/CPU cores/threads to have
     concurrent execution.
-  \item[\faBook]<2-> \textbf{Task switching}/\textbf{interleaving} are the hallmarks of
+  \item[\faBook]<1-> \textbf{Task switching}/\textbf{interleaving} are the hallmarks of
     concurrency.
   \end{itemize}}
 \end{frame}
@@ -327,7 +331,7 @@
 
 
 \begin{frame}[fragile]
-  \frametitle{Examples of Concurrency, two chefs}
+  \frametitle{Case 2: two chefs}
 
   \begin{center}
     \includegraphics[width=11cm,keepaspectratio]{media/lecture1-twochefs.png}
@@ -342,7 +346,7 @@
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Examples of Concurrency, two chefs}
+  \frametitle{Case 2: two chefs}
 
   \large{
     \begin{itemize}
@@ -439,8 +443,7 @@
       \node[xshift=4cm,yshift=3cm,starburst,starburst points=25,
       align=center,fill=yellow, opacity=1,draw=red, line width=2pt]
       {\large{\textbf{Complete chaos!}}};
-    \end{tikzpicture}}
-  \onslide<3->{
+    \end{tikzpicture}
     \begin{tikzpicture}[overlay, remember picture]
       \node[xshift=11cm,yshift=3cm,ellipse,
       align=center,fill=green!20, opacity=1,draw=black, line width=0.4pt]
@@ -513,26 +516,6 @@
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Threads}
-
-  \begin{itemize}
-  \item[\faBook] The main abstraction that is involved in concurrency.
-  \item[\faBook] A thread represents a lightweight, independent unit of
-    execution.
-  \item[\faBook] Threads are present at multiple levels of the
-    software stack:
-    \begin{itemize}
-    \item[\faLinux] Operating system level, i.e. user and kernel threads.
-    \item[\faCode] At the level of programming languages, Java threads, pthreads
-      in C...
-    \end{itemize}
-  \item[\faBook] There can be many active threads active at the same time, i.e.
-    \emph{concurrently}.
-  \item[\faExclamation]<2-> ... but they do not need to run at the actual same moment.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
   \frametitle{Threads vs processes}
 
   \begin{center}
@@ -541,7 +524,39 @@
 
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{Dangerous pitfalls (will be dealing a lot with those)}
 
+  \begin{itemize}
+  \item[\faUserInjured] \textbf{Race conditions}: Multiple threads accessing and
+    modifying shared data inconsistently.
+    \begin{itemize}
+    \item[\faBriefcaseMedical]<2-> Proper, careful synchronization.
+    \end{itemize}
+  \item[\faUserInjured] \textbf{Deadlocks}: Threads waiting indefinitely for each
+    other.
+    \begin{itemize}
+    \item[\faBriefcaseMedical]<2-> Proper, careful synchronization.
+    \end{itemize}
+  \item[\faUserInjured] \textbf{Starvation}: Some threads never get CPU time due to
+    scheduling.
+    \begin{itemize}
+    \item[\faBriefcaseMedical]<2-> Proper, careful synchronization.
+    \end{itemize}
+  \item[\faUserInjured] \textbf{Visibility Issues}: Changes in one thread
+    not visible to others.
+    \begin{itemize}
+    \item[\faBriefcaseMedical]<2-> Make no assumptions on data sharing between threads.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+% \section{Course Schedule}
+
+\begin{frame}{}
+  \centering \huge
+  Thank you!
+\end{frame}
 
 % \begin{frame}[allowframebreaks]
 %   \frametitle{Bibliography}
