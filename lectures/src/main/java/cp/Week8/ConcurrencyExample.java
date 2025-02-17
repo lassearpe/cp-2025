@@ -1,13 +1,19 @@
 package cp.Week8;
 
-// Without any printf statements, then in most hardware these threads are 
-// running in parallel. However, the output of information to the terminal 
-// happens concurrently, and thus the entire example is concurrent. 
+// Simplified example. Tasks are not a sequence of sub-tasks but, rather, an infinite list. 
 
 class Task1 extends Thread {
     public void run() {
         for (int i = 1; i <= 7; i++) {
-            System.out.printf("↓ Task1 - %d%n", i); 
+            int res = (int)Math.round( Math.random());
+            String dish;
+            if (res == 0)
+                dish = "Pasta";
+            else
+                dish = "Steak";
+
+            //System.out.printf("↓ %s - %d%n", dish,i); 
+            System.out.printf("↓ %s%n", dish); 
            try { Thread.sleep((long)(Math.random() * 500)); } catch (InterruptedException ignored) {} // Simulate random delay
         }
     }
@@ -15,8 +21,17 @@ class Task1 extends Thread {
 
 class Task2 extends Thread {
     public void run() {
+        
         for (int i = 1; i <= 7; i++) {
-            System.out.printf("%30s↓ Task2 - %c%n", "", i+96);
+            int res = (int)Math.round( Math.random());
+            String dish;
+            if (res == 0)
+                dish = "Pasta";
+            else
+                dish = "Steak";
+            
+            //System.out.printf("%30s↓ %s - %c%n", "", dish,i+96);
+            System.out.printf("%30s↓ %s%n", "", dish);
             try { Thread.sleep((long)(Math.random() * 500)); } catch (InterruptedException ignored) {} // Simulate random delay
         }
     }
