@@ -16,7 +16,7 @@ class SharedCounter {
 
 public class RaceCondition {
     public static void main(String[] args) throws InterruptedException {
-        SharedCounter counter = new SharedCounter(); // One instance used in the example
+        SharedCounter counter = new SharedCounter(); //Observe that this instance is used in both threads.
 
         // Create two threads that increment the counter
         Thread t1 = new Thread(() -> {
@@ -37,7 +37,7 @@ public class RaceCondition {
         t1.join();
         t2.join();
 
-         // Expected: 3200, but often less
+         // Expected: 3200, but usually less
         System.out.println("Final counter value: " + counter.getCount());
     }
 }

@@ -1,6 +1,7 @@
 package cp.Week8;
 
-// This is pretty much parallel.
+// The execution is deterministic, at least assuming true parallel execution under the hood.
+// Another deterministic perspective is that the output of the program is *always* "Done!\nDone!".
 
 class ParTask1 extends Thread {
     public void run() {
