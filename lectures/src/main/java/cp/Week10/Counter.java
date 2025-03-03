@@ -4,15 +4,17 @@ package cp.Week10;
  * Our familiar Counter.java example from Week 8
  * The final value of the private variable 'counter' is usually not equal to
  * the sum of its increments from both threads
+ * 
+ * This example also showcases that one can't just combine atomic actions.
  */
 
 class SharedCounter {
     private int count = 0; // Shared among threads!
 
     public void increment() {
-        int temp = count;  // Read
-        temp = temp + 1;   // Modify
-        count = temp;      // Write
+        int temp = count;  // Read (atomic)
+        temp = temp + 1;   // Modify (atomic)
+        count = temp;      // Write (atomic)
     }
 
     public int getCount() {

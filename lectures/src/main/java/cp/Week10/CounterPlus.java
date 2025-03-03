@@ -8,7 +8,7 @@ class SharedCounter2 {
     private int count = 0; // Shared among threads!
 
     public void increment() {
-        count++; //Still not atomic
+        count++; //How about this?
     }
 
     public int getCount() {
