@@ -4,7 +4,7 @@ package cp.Week10;
  * Qestion: What if the variable 'counter' is volatile?
  */
 
-class SharedCounter {
+class SharedCounter3 {
     private volatile int count = 0; // Nothing to do with visibility
 
     public void increment() {
@@ -18,7 +18,7 @@ class SharedCounter {
 
 public class CounterVolatile {
     public static void main(String[] args) throws InterruptedException {
-        SharedCounter counter = new SharedCounter(); //Observe that this instance is used in both threads.
+        SharedCounter3 counter = new SharedCounter3(); //Observe that this instance is used in both threads.
 
         // Create two threads that increment the counter
         Thread t1 = new Thread(() -> {

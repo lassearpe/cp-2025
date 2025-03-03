@@ -4,7 +4,7 @@ package cp.Week10;
  * Qestion: What if the increment method uses '++' instead of a temporary variable?
  */
 
-class SharedCounter {
+class SharedCounter2 {
     private int count = 0; // Shared among threads!
 
     public void increment() {
@@ -18,7 +18,7 @@ class SharedCounter {
 
 public class CounterPlus {
     public static void main(String[] args) throws InterruptedException {
-        SharedCounter counter = new SharedCounter(); //Observe that this instance is used in both threads.
+        SharedCounter2 counter = new SharedCounter2(); //Observe that this instance is used in both threads.
 
         // Create two threads that increment the counter
         Thread t1 = new Thread(() -> {
