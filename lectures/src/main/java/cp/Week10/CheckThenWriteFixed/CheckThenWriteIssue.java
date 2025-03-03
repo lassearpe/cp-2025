@@ -1,12 +1,12 @@
-package cp.Week8;
+package cp.Week10.CheckThenWriteFixed;
 import java.util.*;
 
 class SharedList {
     private final List<String> list = new ArrayList<>(); // Shared among threads!
 
-    public void addIfNotPresent(String item) {
+    public synchronized void addIfNotPresent(String item) {
         if (!list.contains(item)) {  // Check
-            try { Thread.sleep(1); } catch (InterruptedException ignored) {} // Simulating delay
+            try { Thread.sleep(1000); } catch (InterruptedException ignored) {} // Simulating delay
             list.add(item);           // Write, you can insert breakpoint here to catch both threads
         }
     }
