@@ -561,13 +561,43 @@
 
   \begin{block}{Important}
     A shared state may consist of multiple variables. Pay attention to their
-    \emph{dependence}. Dependent variables need to be treated uniformly, and
-    protected by a \emph{single} lock!
+    \emph{dependence}: Synchronizing individual variables separately does not
+    ensure atomicity when variables are related.
   \end{block}
 
   \begin{itemize}
   \item<2->[\faUserInjured] Make sure you use only \textbf{one} lock per
-    ``dependent group'' of variables.
+    ``dependent group'' of variables, for operations that must happen as a unit.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Intrinsic locks (3)}
+
+  \begin{itemize}
+  \item[\faBook]<1-> Locks ``serialize'' access to shared resource, thus making
+    operations \emph{sequential}.
+  \item[\faUserInjured]<1-> This means that there is performance overhead
+    associated to locks.
+  \item[\faBook]<1-> Make sure you use locks efficiently and only protect the 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Code Listings}
+
+  \begin{itemize}
+  \item[\faCode]<1-> CookingBenignRace: ``Two-chefs'' but correctness is
+    independent of the interleaving.
+  \item[\faCode]<1-> CookingRace: ``Two-chefs'' with a shared
+    pan. Race condition is present.
+  \item[\faCode]<1-> CookingFixed: ``Two-chefs'' with a shared pan, synchronized.
+  \item[\faCode]<1-> WithdrawFixed: Synchronized check-then-withdraw example.
+  \item[\faCode]<1-> Counter.java: Example from Week 8 on a shared counter.
+  \item[\faCode]<1-> CounterPlus.java: Example from Week 8 on a shared counter.
+  \item[\faCode]<1-> GasTankRace: Gas storage example with a nice race
+    condition.
+  \item[\faCode]<1-> GasTankRace: Gas storage example with a nice race condition.
   \end{itemize}
 \end{frame}
 

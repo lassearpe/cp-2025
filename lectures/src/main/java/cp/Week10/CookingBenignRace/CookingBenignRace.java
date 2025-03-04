@@ -1,4 +1,4 @@
-package cp.Week10.BenignRace;
+package cp.Week10.CookingBenignRace;
 
 import java.util.List;
 import java.util.ArrayList;
