@@ -1,5 +1,8 @@
 package cp.week9;
 
+import java.nio.file.Files;
+import java.util.stream.Stream;
+
 public class StreamExercise5
 {
 	/* ! (Exercises marked with ! are more difficult.)
@@ -15,4 +18,17 @@ public class StreamExercise5
 	  to produce a single HashMap<String, Integer> that stores
 	  the results for the entire file.
 	*/
+
+private static void countCharacters (Path path) {
+	try ( Stream <String> lines = Files.lines(path) ) {
+		lines
+			.flatMap( line -> Stream.of( line.split(" ")))
+			.map( word -> 
+			Map<String, Integer> m = new HashMap<>();
+			m.put(word,1);
+			return m;
+			) 
+	}
+}
+
 }
