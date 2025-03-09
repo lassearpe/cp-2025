@@ -47,5 +47,7 @@ public class Counter {
 
          // Expected: 3200, but usually less
         System.out.println("Final counter value: " + counter.getCount());
+        if (counter.getCount() != 3200)
+            System.out.println("You suck!");
     }
 }

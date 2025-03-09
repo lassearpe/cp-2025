@@ -1,5 +1,10 @@
 package cp.Week10;
 
+/*
+ * This example does not work in a 64bit build.
+ * Can someone trigger it?
+ */
+
 class SharedData {
     public long sharedLong = -1;  // Shared long variable (not volatile!)
 
@@ -41,7 +46,8 @@ class ReadingThread extends Thread {
     }
 }
 
-public class DataRaceExample {
+
+public class DataRace {
     public static void main(String[] args) {
         SharedData data = new SharedData();
 
