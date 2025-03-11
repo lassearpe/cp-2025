@@ -1,5 +1,7 @@
 package cp.week8;
 
+import java.util.ArrayList;
+
 /**
  * 
  * @author Fabrizio Montesi
@@ -23,4 +25,37 @@ public class LambdaExercise2
 	- Modify the Box class constructor such that it throws an IllegalArgumentException
 	  if the passed content is null.
 	*/
+
+
+// Husk Lasse -> du skal ikke implementere metoden til "apply" endnu -> bare skabe muligheden for dens anvendelse. 
+// så kan man senere hen udnytte vores interface til at implementere forskellige former for "apply".
+
+    public static void main( String[] args ) {
+		Box<String, String> box = new Box<>("Hej");
+		System.out.println(box.content());
+
+	}
 }
+
+interface BoxFunction<I,O> {
+	O apply(I input);
+}
+
+class Box< I, O > {
+	private I content;
+	// private O output;
+
+	public Box(I content) {
+		this.content = content;
+	}
+
+	public I content() {
+		return this.content;
+	}
+
+	O apply(BoxFunction<I,O> function) {
+		return function.apply(this.content);
+	}
+
+}
+

@@ -18,7 +18,7 @@ public class StreamExercise1
 
 // Should they have their own line? Right now, it just removes the middle spacing. 
 private static void printLinesWithDot(Path path) {
-	try (Stream < String > lines = Files.lines(path) ) {
+	try (Stream<String> lines = Files.lines(path) ) {
 		lines
 			.filter(line -> line.contains(". "))
 			.forEach(System.out::println );

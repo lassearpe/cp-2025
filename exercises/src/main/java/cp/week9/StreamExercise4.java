@@ -16,7 +16,7 @@ public class StreamExercise4
 	*/
 
 private static void countCinFile(Path path) {
-	try (Stream < String > lines = Files.lines(path) ) {
+	try (Stream <String> lines = Files.lines(path) ) {
 		long lines2 = lines
 			.map(String::toUpperCase)
 			// .flatMap
@@ -27,7 +27,6 @@ private static void countCinFile(Path path) {
 			// .mapToInt(IntStream::sum);
 
 	System.out.println(lines2);
-
 
 	} catch( IOException e ) {
 		e.printStackTrace();
