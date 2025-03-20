@@ -1,4 +1,4 @@
-package cp.threads;
+package cp.week11;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,14 +17,14 @@ public class SynchronizedMap2TWords {
 		// word -> number of times that it appears over all files
 		Map< String, Integer > occurrences = new HashMap<>();
 
-		Thread t1 = new Thread( () -> computeOccurrences( "text1.txt", occurrences ) );
-		Thread t2 = new Thread( () -> computeOccurrences( "text2.txt", occurrences ) );
+		Thread t1 = new Thread( () -> computeOccurrences( "exercises/src/main/java/cp/week11/test.txt", occurrences ) );
+		// Thread t2 = new Thread( () -> computeOccurrences( "text2.txt", occurrences ) );
 
 		t1.start();
-		t2.start();
+		// t2.start();
 		try {
 			t1.join();
-			t2.join();
+			// t2.join();
 		} catch( InterruptedException e ) {
 			e.printStackTrace();
 		}

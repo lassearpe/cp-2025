@@ -32,12 +32,14 @@ public class ThreadsExercise1
 		t1.join();
 		t2.join();
 
-		System.out.println(test.x);
+		System.out.println(test.getX());
 	}
 }
 
 class Counter {
-	public int x = 0;
+	private int x = 0;
+
+	public int getX() {return x;}
 
 	public synchronized void increment() {
 			x=x+1;
