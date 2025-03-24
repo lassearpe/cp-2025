@@ -26,7 +26,7 @@ public class ThreadsExercise5 {
 	 * 
 	 * -
 	 * 
-	 * In order to use client-side locking, you must know what lock X uses.
+	 * VIGTIGT -> In order to use client-side locking, you must know what lock X uses.
 	 * 
 	 * 
 	 * DENNE HER VIL DU GERNE HAVE HJÆLP TIL AT FORSTÅ...

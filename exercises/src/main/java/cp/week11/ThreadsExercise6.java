@@ -36,8 +36,6 @@ public class ThreadsExercise6 {
 	 * should run concurrently and be waited for).
 	 */
 
-	// map -> one to one, flatmap -> many to many?
-
 	// public static Map< String, Integer > computeOccurrences2( Stream< String >
 	// filenames ) {
 
@@ -50,10 +48,10 @@ public class ThreadsExercise6 {
 		// Gemmer i en liste. 
 		List<Thread> myThreads = filenames
 				.map(Paths::get)
-				.map(path -> new Thread(() -> { // Returnerer thread for hver stream.
+				.map(path -> new Thread(() -> { // Returnerer thread for hver stream (hver fil med sine egne ord.).
 					try {
 						Files.lines(path) // Returnerer stream specifikt til tråd indeholde ord. 
-							.flatMap(line -> Words.extractWords(line)) // FlatMap -> kan ændre antallet i en liste.
+							.flatMap(line -> Words.extractWords(line)) // FlatMap -> kan ændre antallet i en liste (mindre om en monade).
 							.map(String::toLowerCase)
 							.forEach(s -> {
 								synchronized (occurences) {
