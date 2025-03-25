@@ -1,4 +1,4 @@
-package cp.threads;
+package cp.week13.Maps;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import cp.week13.Words;
+
 public class SpinlockMap2T
 {
-	public static void main(String[] args)
+	public static void main()
 	{
 		// word -> number of times that it appears over all files
 		Map< String, Integer > occurrences = new HashMap<>();
