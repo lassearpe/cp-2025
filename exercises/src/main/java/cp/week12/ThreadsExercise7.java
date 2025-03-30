@@ -43,8 +43,13 @@ public static void main(String[] args) {
 
 		// Forskellen kunne også bare være, om de har den samme counter -> eller om de har hver deres counter (opg 7 vs opg 8.)
 		
-		AtomicInteger countL_t1 = new AtomicInteger(0);
-		AtomicInteger countL_t2 =  new AtomicInteger(0);;
+		// AtomicInteger countL_t1 = new AtomicInteger(0);
+		// AtomicInteger countL_t2 =  new AtomicInteger(0);;
+
+		// 
+
+		referenceInt countL_t1 = new referenceInt(0);
+		referenceInt countL_t2 = new referenceInt(0);
 
 		Thread t1 = new Thread( () -> computeOccurrences( "/home/lassearpekristensen/Datalogi/4. semester/Concurrent Programming/cp-2025/exercises/src/main/java/cp/week12/text1.txt", occurrences, countL_t1) );
 		Thread t2 = new Thread( () -> computeOccurrences( "/home/lassearpekristensen/Datalogi/4. semester/Concurrent Programming/cp-2025/exercises/src/main/java/cp/week12/text2.txt", occurrences, countL_t2) );
@@ -61,12 +66,12 @@ public static void main(String[] args) {
 		occurrences.forEach( (word, n) -> System.out.println( word + ": " + n ) );
 		System.out.println("Words that start with L in text 1: " + countL_t1);
 		System.out.println("Words that start with L in text 2: " + countL_t2);
-		int total = countL_t1.get()+countL_t2.get();
+		int total = countL_t1.counter+countL_t2.counter;
 		System.out.println("Total words with L: " + total);
 }		
 
 
-	private static void computeOccurrences(String filename, Map<String, Integer> occurrences, AtomicInteger countL) {
+	private static void computeOccurrences(String filename, Map<String, Integer> occurrences, referenceInt countL) {
 
 		try {
 			Files.lines( Paths.get( filename ) ).flatMap( Words::extractWords ).map( String::toLowerCase ).forEach( 
@@ -75,7 +80,7 @@ public static void main(String[] args) {
 					occurrences.merge( s, 1, Integer::sum );
 
 					if (s.charAt(0) == 'l') {
-						countL.incrementAndGet();
+						countL.counter++;
 					}
 				}
 
@@ -85,6 +90,12 @@ public static void main(String[] args) {
 		}
 	}
 
+static class referenceInt {
+	int counter; // Bliver kopieret ved reference. Det er referencen vi videresender - ikke selve den primitive variabel. 
 
+	referenceInt(int countL) {
+		this.counter = countL;
+	}
 
+}
 }
