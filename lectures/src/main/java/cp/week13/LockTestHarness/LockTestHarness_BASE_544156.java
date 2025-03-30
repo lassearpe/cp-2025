@@ -1,15 +1,9 @@
 package cp.week13.LockTestHarness;
 
 public class LockTestHarness {
-<<<<<<< HEAD
-    private static final int NUM_THREADS = 64;
-    private static final int INCREMENTS_PER_THREAD = 1;
-    private static int counter = 1;
-=======
-    private static final int NUM_THREADS = 1;
-    private static final int INCREMENTS_PER_THREAD = 90_000_000;
+    private static final int NUM_THREADS = 4;
+    private static final int INCREMENTS_PER_THREAD = 10_000_000;
     private static int counter = 0;
->>>>>>> 00144f62b4614d2fcea08db118e44dd3184967ef
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("🔧 Testing SpinLock...");
