@@ -32,13 +32,10 @@ Gå den alligevel igennem med Victor for at sikre dig, at du har forstået det o
 	{
 		// word -> number of times that it appears over all files
 		Map< Character, Set<String> > occurrences = new ConcurrentHashMap<>();
-
-
-
 		
 		List< String > filenames = List.of(
 			"/home/lassearpekristensen/Datalogi/4. semester/Concurrent Programming/cp-2025/exercises/src/main/java/cp/week13/text1.txt",
-			"/home/lassearpekristensen/Datalogi/4. semester/Concurrent Programming/cp-2025/exercises/src/main/java/cp/week13/text1.txt"
+			"/home/lassearpekristensen/Datalogi/4. semester/Concurrent Programming/cp-2025/exercises/src/main/java/cp/week13/text2.txt"
 		);
 		
 		CountDownLatch latch = new CountDownLatch( filenames.size() );
@@ -59,6 +56,7 @@ Gå den alligevel igennem med Victor for at sikre dig, at du har forstået det o
 		occurrences.forEach( (word, n) -> System.out.println( word + ": " + n ) );
 	}
 	
+	// Ændret indholdet af parametrene; tilføjer ord til set hvis startbogstav.
 	private static void computeOccurrences( String filename, Map< Character, Set<String>> occurrences )
 	{
 		try {

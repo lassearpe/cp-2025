@@ -5,11 +5,11 @@ import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class LatchTestHarness2LongMap {
+public class LocalVSMapCampaign {
     private static long sharedCounter = 0;
     private static final Object lock = new Object();
     private static final List<Integer> threadCounts = Arrays.asList(1, 2, 4, 8, 16, 32, 64);
-    private static final List<Long> totalIncrements = Arrays.asList(13743895L);
+    private static final List<Long> totalIncrements = Arrays.asList(1024L);
     private static final int REPS = 1;
 
     public static void main(String[] args) throws InterruptedException {
@@ -44,6 +44,9 @@ public class LatchTestHarness2LongMap {
                 Thread t = new Thread(() -> {
                     long local = 0;
                     for (long j = 0; j < perThread; j++) {
+                        try {
+                            Thread.sleep(8); // Simulate work time
+                        } catch (InterruptedException ignored) {}
                         local++;
                     }
                     synchronized (lock) {
@@ -77,6 +80,9 @@ private static double benchmarkPerThreadMapConcurrent(int numThreads, long total
             Thread t = new Thread(() -> {
                 map.put(id, 0L);
                 for (long j = 0; j < perThread; j++) {
+                    try {
+                        Thread.sleep(8); // Simulate work time
+                    } catch (InterruptedException ignored) {}
                     long cur = map.get(id);
                     map.put(id, ++cur); // Each thread sets its own key
                 }

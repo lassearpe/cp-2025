@@ -1,11 +1,15 @@
 package cp.week13.LockTestHarness;
 
+<<<<<<< HEAD:lectures/src/main/java/cp/week13/LockTestHarness/LockTestHarness.java
 public class LockTestHarness {
 <<<<<<< HEAD
     private static final int NUM_THREADS = 64;
     private static final int INCREMENTS_PER_THREAD = 1;
     private static int counter = 1;
 =======
+=======
+public class SyncVSGaren {
+>>>>>>> a9b7e1280202b35c60021deb7ffea0252085e846:lectures/src/main/java/cp/week13/LockTestHarness/SyncVSGaren.java
     private static final int NUM_THREADS = 1;
     private static final int INCREMENTS_PER_THREAD = 90_000_000;
     private static int counter = 0;
