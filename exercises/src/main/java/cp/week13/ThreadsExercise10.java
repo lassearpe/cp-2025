@@ -20,13 +20,8 @@ public class ThreadsExercise10
 	/*
 	Modify ThreadsExercise9 to use Files.walk over the data directory in the Threads project, such
 	that you recursively visit all files in that directory instead of using a fixed list of filenames.
-	
-	-- lav på øvelsesholdet; evt. se billedet på den telefon.
 
-
-	// Latch er et alternativ til at joine. Den bruges også blot til at vente. 
-	
-	// Hvorfor try/except
+	// Latch er et alternativ til at joine. Den bruges også blot til at vente. Derfor ikke nødvendig, hvis vi bruger join().
 
 	*/
 

@@ -1,6 +1,7 @@
 package cp.week9;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public class StreamExercise5
@@ -24,7 +25,7 @@ private static void countCharacters (Path path) {
 		lines
 			.flatMap( line -> Stream.of( line.split(" ")))
 			.map( word -> 
-			Map<String, Integer> m = new HashMap<>();
+			HashMap<String, Integer> m = new HashMap<>();
 			m.put(word,1);
 			return m;
 			) 

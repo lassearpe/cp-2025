@@ -12,4 +12,9 @@ public class ThreadsExercise13
 	Which executor runs faster?
 	Can you explain why?
 	*/
+
+
+	Fjern latch, brug executer. Ikke thread, submit til executor. 
+	executor.newWorkingStealingPoll();
+	threads kan stjæle jobs fra hinanden. 
 }

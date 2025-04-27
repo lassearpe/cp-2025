@@ -1,4 +1,4 @@
-package cp.week12;
+package cp.week14;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,33 +39,22 @@ public class Words {
 	}
 	
 	public static Stream< String > extractWords( String s ) {
- 		List< String > words = new ArrayList<>();
+		List< String > words = new ArrayList<>();
 		
 		BreakIterator it = BreakIterator.getWordInstance();
 		it.setText( s );
 		
 		int start = it.first();
 		int end = it.next();
-		
 		while( end != BreakIterator.DONE ) {
 			String word = s.substring( start, end );
 			if ( Character.isLetterOrDigit( word.charAt( 0 ) ) ) {
 				words.add( word );
 			}
-
 			start = end;
 			end = it.next();
 		}
 		
 		return words.stream();
 	}
-
-	// public static Stream< String > countL(Stream<String> stream) {
-
-	// return stream;	
-
-	// }
-
-
 }
-
