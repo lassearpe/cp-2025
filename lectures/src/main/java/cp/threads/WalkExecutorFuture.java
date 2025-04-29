@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class WalkExecutorFuture
 {
-	public static void main(String[] args)
+	public static void main()
 	{
 		// word -> number of times it appears over all files
 		Map< String, Integer > occurrences = new HashMap<>();

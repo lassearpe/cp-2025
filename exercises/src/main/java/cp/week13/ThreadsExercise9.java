@@ -26,6 +26,10 @@ Inddele ord efter deres begyndelsesbogstav.
 	
 Gå den alligevel igennem med Victor for at sikre dig, at du har forstået det ordenligt.
  
+Countdown latch -> synkronisering: waits until a set of operations by other threads have been completed. 
+- brugt når man skal sikre sig, at nogle opgaver bliver færdiggjort før andre. 
+- count: antal opgaver der skal udføres, før at latch udløser de ventende threads. 
+
 	*/
 
 	public static void main(String[] args) 
@@ -43,17 +47,17 @@ Gå den alligevel igennem med Victor for at sikre dig, at du har forstået det o
 		filenames.stream()
 			.map( filename -> new Thread( () -> {
 				computeOccurrences( filename, occurrences );
-				latch.countDown();
+				latch.countDown(); // Decrement latch countdown. 
 			} ) )
 			.forEach( Thread::start );
 
 		try {
-			latch.await();
+			latch.await(); // wait until latch count reaches zero.
 		} catch( InterruptedException e ) {
 			e.printStackTrace();
 		}
 		
-		occurrences.forEach( (word, n) -> System.out.println( word + ": " + n ) );
+		occurrences.forEach( (character, list) -> System.out.println( character + ": " + list ) );
 	}
 	
 	// Ændret indholdet af parametrene; tilføjer ord til set hvis startbogstav.

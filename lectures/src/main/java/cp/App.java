@@ -1,6 +1,9 @@
 package cp;
 
 import cp.threads.VirtualThreads2;
+import cp.threads.WalkCompletionService;
+import cp.threads.WalkExecutor;
+import cp.threads.WalkExecutorFuture;
 
 /**
  * Main class (entry point) of the Java Application.
@@ -13,6 +16,8 @@ public final class App {
 	 */
 	public static void main( String[] args ) {
 		// VirtualThreads1.main();
-		VirtualThreads2.main();
+		// VirtualThreads2.main();
+		Utils.doAndMeasure(WalkExecutorFuture::main);
+		Utils.doAndMeasure(WalkCompletionService::main);
 	}
 }
