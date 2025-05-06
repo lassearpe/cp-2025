@@ -26,17 +26,19 @@ public class ThreadsExercise15
 	/*
 	Adapt your program from ThreadsExercise14 to use an ExecutorCompletionService, as in Threads/cp/WalkCompletionService.
 	
-	
 	CompletionFuture cs CompletionService
 
-	CompletionFuture forgår i submission order, ikke completion order. 
+	CompletionFuture forgår i submission order, ikke completion order. Mere kontrol.
 	Det gør, at der kommer mere ventetid. (Blocking)
 
-	CompletionService er non-blocking - går igang med ting, så snart det er muligt. 
-	CF -> Mere kontrol
-	CS -> Hurtigere. 
+	Futures minder om latch - vi bestemmer, hvornår vi afslutter den. 
+		Derfor kan completionFutur bruges til mere kontrol over udførslen.  
 
-	Vis hastigheden via din timer.
+	CompletionService er non-blocking - går igang med ting, så snart det er muligt. 
+	CF -> Mere kontrol.
+	CS -> Simplere. 
+
+	Hvis vi ikke har brug for kontrol, så er Executors bedre, da det er mere simpelt. 
 
 	*/
 
@@ -79,13 +81,10 @@ public static void main()
 	// System.out.println(fileOccurrences);
 	}
 	
-// Det er nok ikke meningen, at jeg skal lave endnu en Map i denne funktion?
-// Hør lige, hvad Victor siger til det. 
 	private static Map<Path, FileInfo> computeFileInfo( Path textFile )
 	{
 		Map< Path, FileInfo > occurrences = new HashMap<>();
-		FileInfo info = new FileInfo();
-		info.setFile(textFile);
+		FileInfo info = new FileInfo(textFile);
 		occurrences.put(textFile, info);
 		
 		return occurrences;
@@ -95,19 +94,19 @@ public static void main()
 
 class FileInfo {
 
-	double size;
-	long lines;
-	long linesL;
-	Path path;
+	final double size;
+	final long lines;
+	final long linesL;
+	final Path path;
 
-	public FileInfo setFile(Path filePath) {
+	// Constructor. 
+	public FileInfo(Path filePath) {
 		File file = filePath.toFile();
 		this.path = filePath;
 		this.size = file.length();
 		this.lines = getLines();
 		this.linesL = getLinesUpperCaseL();
-
-		return this;	
+	
 	}
 
 	public long getLines() {

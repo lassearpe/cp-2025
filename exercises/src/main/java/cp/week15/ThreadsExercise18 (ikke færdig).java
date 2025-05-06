@@ -7,76 +7,73 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  *
  * @author Fabrizio Montesi <fmontesi@imada.sdu.dk>
  */
-public class ThreadsExercise17
+public class ThreadsExercise18
 {
 	/*
-	Adapt your program from ThreadsExercise15 to stop as soon as a task that has processed a file with more than 10 lines is completed.
+	Adapt your program from ThreadsExercise16 to stop as soon as a task that has processed a file with more than 10 lines is completed.
 	
-	Denne her vil du gerne tjekke med andre, om den er korrekt. 
+	DENNE SKAL DU HAVE HJÆLP TIL. 
+
+	Hint: use CompletableFuture.anyOf
 	*/
 
-	public static void main()
+	public static void main() throws InterruptedException, ExecutionException
 	{
-		// word -> number of times it appears over all files
-		Map< Path, FileInfo > fileOccurrences = new HashMap<>();
-		ExecutorService executor = Executors.newWorkStealingPool();
-		ExecutorCompletionService< Map< Path, FileInfo > > completionService = new ExecutorCompletionService<>( executor );
+
+		Map< Path, FileInfo > occurrences = new ConcurrentHashMap<>();
 
 		try {
-			long pendingTasks = 
+			CompletableFuture < Void > [] futures = 
 				Files.walk( Paths.get( "/home/lassearpekristensen/Datalogi/4. semester/Concurrent Programming/cp-2025/exercises/src/main/java/cp/week15" ) )
 					.filter( Files::isRegularFile )
 					.map( filepath ->
-						completionService.submit( () -> computeFileInfo( filepath ) )
+						CompletableFuture.supplyAsync( () -> computeFileInfo( filepath ) )  // SupplyAsync: Kører i baggrunden på en anden thread. 
+						.thenAccept( fileOccurrences -> occurrences.putAll(fileOccurrences)) // Monad, hvor vi behandler færdig vores fremsatte futures. 
 					)
-					.count();
+					
+					.collect( Collectors.toList() ).toArray( new CompletableFuture[0] );
 
-			while( pendingTasks > 0 ) {
-				Map<Path, FileInfo> result = completionService.take().get();
-				// if (result.entrySet().) {
+				Object result = CompletableFuture.anyOf(futures).get();
 
-				// }
-				// fileOccurrences.forEach( (word, n) -> occurrences.merge( word, n, Integer::sum ) );
-				fileOccurrences.putAll(result); // Dette kan godt gå, når hver key er unik. 
 
-				FileInfo tempFile = result.entrySet().iterator().next().getValue();
-				if (tempFile.lines >= 10) {
-					pendingTasks = 0;
-				} else { pendingTasks--; }
+				// HER ER DIT ISSUE; HVORDAN FÅR MAN DEN TIL AT STOPPE PÅ DET "RIGTIGE" TIDSPUNKT?
+				if (result instanceof Map<?, ?>) {
+					@SuppressWarnings("unchecked")
+					Map<Path, FileInfo> resultMap = (Map<Path, FileInfo>) result;
+					if (resultMap.entrySet().iterator().next().getValue().lines  >= 10) {
+						futures.cancel(false);
+					}  
+				}
 
-			}
 
-		} catch( InterruptedException | ExecutionException | IOException e ) {
+			// CompletableFuture<Object> anyOf = CompletableFuture.anyOf(futures);
+
+			CompletableFuture.allOf( futures ).join();
+
+		} catch( IOException e ) {
 			e.printStackTrace();
 		}
 		
-		try {
-			executor.shutdown();
-			executor.awaitTermination( 1, TimeUnit.DAYS );
-		} catch( InterruptedException e ) {
-			e.printStackTrace();
-		}
-		
-	fileOccurrences.forEach( (file, info) -> System.out.println( file + ": " + info.lines) );
+	occurrences.forEach( (file, info) -> System.out.println( file + ": " + info.lines) );
 	
-	// System.out.println(fileOccurrences);
 	}
 	
+
 	private static Map<Path, FileInfo> computeFileInfo( Path textFile )
 	{
 		Map< Path, FileInfo > occurrences = new HashMap<>();
 		FileInfo info = new FileInfo(textFile);
+		// info.setFile(textFile);
 		occurrences.put(textFile, info);
 		
 		return occurrences;
@@ -115,7 +112,7 @@ class FileInfo {
 	}
 
 	public long getLinesUpperCaseL() {
-		long lineCountL=2;
+		long lineCountL=0;
 
 		try (Stream<String> stream = Files.lines(path)) {
 			lineCountL = stream.filter(line-> !line.isEmpty() && line.charAt(0)=='L')

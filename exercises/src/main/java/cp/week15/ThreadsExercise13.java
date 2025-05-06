@@ -43,6 +43,10 @@ public class ThreadsExercise13
 		herefter når den matcher de talte ord i hvert set med hinanden
 		-> dette, som gør den langsom?
 		-> Men den tager dog ca. ligeså længe, som Fabrizios implementering.
+
+
+		Ofte afgørende hvor lang tid de enkelte jobs tager. 
+		- NewWorkStealingPool egner sig bedre til "små" jobs. 
 		*/
 
 	/* Network stealing pool */
@@ -52,6 +56,9 @@ public class ThreadsExercise13
 		// word -> number of times that it appears over all files
 		Map< Character, Set<String> > occurrences = new HashMap<>();
 		ExecutorService executor = Executors.newWorkStealingPool();
+
+
+
 		// ExecutorService executor = Executors.newCachedThreadPool(); // For testing another type. 
 		// ExecutorService executor = Executors.newFixedThreadPool(4); // For testing another type. 
 

@@ -30,8 +30,6 @@ public class ThreadsExercise14
 		- the size of the file;
 		- the number of lines contained in the file;
 		- the number of lines starting with the uppercase letter "L".
-			SPØRG VICTOR, HVORFOR DET IKKE VIRKER. 
-
 
 	Denne her skal du bruge hjælp fra Victor til at løse. 
 
@@ -76,13 +74,11 @@ public class ThreadsExercise14
 	// System.out.println(fileOccurrences);
 	}
 	
-// Det er nok ikke meningen, at jeg skal lave endnu en Map i denne funktion?
-// Hør lige, hvad Victor siger til det. 
+
 	private static Map<Path, FileInfo> computeFileInfo( Path textFile )
 	{
 		Map< Path, FileInfo > occurrences = new HashMap<>();
-		FileInfo info = new FileInfo();
-		info.setFile(textFile);
+		FileInfo info = new FileInfo(textFile);
 		occurrences.put(textFile, info);
 		
 		return occurrences;
@@ -92,19 +88,19 @@ public class ThreadsExercise14
 
 class FileInfo {
 
-	double size;
-	long lines;
-	long linesL;
-	Path path;
+	final double size;
+	final long lines;
+	final long linesL;
+	final Path path;
 
-	public FileInfo setFile(Path filePath) {
+	// Constructor. 
+	public FileInfo(Path filePath) {
 		File file = filePath.toFile();
 		this.path = filePath;
 		this.size = file.length();
 		this.lines = getLines();
 		this.linesL = getLinesUpperCaseL();
-
-		return this;	
+	
 	}
 
 	public long getLines() {
@@ -121,14 +117,14 @@ class FileInfo {
 	}
 
 	public long getLinesUpperCaseL() {
-		long lineCountL=2;
+		long lineCountL=0;
 
 		try (Stream<String> stream = Files.lines(path)) {
 			lineCountL = stream.filter(line-> !line.isEmpty() && line.charAt(0)=='L')
 			.count();
             // lineCountL = stream.count();  // Count the number of lines in the stream
             // System.out.println("Number of lines: " + lineCount);
-			return lineCountL;
+			// return lineCountL;
         } catch (IOException e) {
             e.printStackTrace();
         }

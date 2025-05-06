@@ -22,9 +22,9 @@ public class WalkCompletableFuture
 				Files.walk( Paths.get( "data" ) )
 					.filter( Files::isRegularFile )
 					.map( filepath ->
-						CompletableFuture.supplyAsync( () -> computeOccurrences( filepath ) )
+						CompletableFuture.supplyAsync( () -> computeOccurrences( filepath ) ) // Kører i baggrunden på en anden thread. 
 							.thenAccept( fileOccurrences ->
-								fileOccurrences.forEach( (word, n) -> occurrences.merge( word, n, Integer::sum ) )
+								fileOccurrences.forEach( (word, n) -> occurrences.merge( word, n, Integer::sum ) ) // Monad, hvor vi behandler færdig future. 
 							)
 					).collect( Collectors.toList() ).toArray( new CompletableFuture[0] );
 			CompletableFuture
