@@ -1,0 +1,539 @@
+
+\PassOptionsToPackage{colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},breaklinks=true,final}{hyperref}
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\documentclass[xcolor={dvipsnames,svgnames},aspectratio=169]{beamer}
+
+\usepackage{fontawesome5}
+\usepackage{booktabs} % For better table formatting
+\usepackage{listings}
+\usepackage{tabularx}
+
+
+\lstset{
+  tabsize = 4, %% set tab space width
+  showstringspaces = false, %% prevent space marking in strings, string is defined as the text that is generally printed directly to the console
+  numbers = left, %% display line numbers on the left
+  commentstyle = \color{purple!60}, %% set comment color
+  keywordstyle = \color{blue}, %% set keyword color
+  stringstyle = \color{red}, %% set string color
+  rulecolor = \color{black}, %% set frame color to avoid being affected by text color
+  basicstyle = \small \ttfamily , %% set listing font and size
+  breaklines = true, %% enable line breaking
+  numberstyle = \tiny,
+}
+
+\title{Concurrent Programming}
+\subtitle{Week 19 (Lecture 10) : \textbf{Virtual threads}}
+\author{Stelios Tsampas}
+\institute{
+  \faEnvelope \; stelios@imada.sdu.dk
+  \qquad
+  \faGlobe \;
+  \href{https://www.steliostsampas.com}{https://www.steliostsampas.com}
+  \\\\\
+  \faGithub \; stelios-tau/cp-2025
+  \qquad\;\;
+    \faDiscord \; cp-2025
+}
+\date{\today}
+
+\titlegraphic{\includegraphics[height=0.6cm,keepaspectratio]{../media/sdu-black.eps}}
+
+\usetheme[block=fill]{metropolis}
+
+
+%\usepackage{pres-common}
+\usepackage{textpos}
+\usepackage{centernot}
+
+% \newcommand{\Goesv}[3]{\ensuremath{#1 \xRightarrow{~#3~} #2}}
+% \newcommand{\goesv}[3]{\ensuremath{#1 \xrightarrow{~#3~} #2}}
+
+% \usepackage{etex}
+% \usepackage{semantic}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\usetikzlibrary{arrows,shapes,matrix}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{positioning}
+\usetikzlibrary{automata}
+\usetikzlibrary{mindmap}
+\usetikzlibrary{shapes.callouts}
+\usetikzlibrary{decorations.text}
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{calc}
+\usetikzlibrary{overlay-beamer-styles}
+\usetikzlibrary{shapes.geometric}
+\usepackage{pgfplots}
+
+
+\tikzset{onslide/.code args={<#1>#2}{%
+    \only<#1>{\pgfkeysalso{#2}} % \pgfkeysalso doesn't change the path
+  }}
+
+\setbeamercolor{mygray}{bg=Gray!20}
+
+\tikzset{temporal/.code args={<#1>#2#3#4}{%
+    \temporal<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}{\pgfkeysalso{#4}} % \pgfkeysalso doesn't change the path
+  }}
+
+\tikzstyle{highlight}=[fill=green!50]
+\tikzstyle{hgreen}=[fill=green!20]
+\tikzstyle{hred}=[fill=red!50]
+\tikzstyle{hblue}=[fill=blue!50]
+\tikzstyle{hgray}=[fill=gray!50]
+
+\addtobeamertemplate{frametitle}{}{%
+\begin{textblock*}{100mm}(\textwidth-2cm,-0.86cm)
+\includegraphics[height=0.6cm,keepaspectratio]{../media/sdu-white.eps}
+\end{textblock*}}
+
+
+%\usepackage{tikz-cd}
+% \usepackage{wasysym}
+% \usepackage{color}
+% \usepackage[matrix,arrow]{xy}
+% \xyoption{all}
+% \SelectTips{cm}{}
+% % \usepackage{cite}
+% \usepackage{amsthm}
+% \usepackage{amsmath}
+% \usepackage{bbold}
+% % \usepackage[bbgreekl]{mathbbol}
+% \usepackage{amssymb}
+% \usepackage{pifont}
+% \usepackage{mathtools}
+% \usepackage{amsbsy}
+% % \usepackage{paralist}
+% \usepackage{shadethm}
+% % \usepackage{fancyhdr}
+% \usepackage{stmaryrd}
+% \usepackage{wasysym}
+% \usepackage{graphicx}
+% \usepackage{tabularx}
+% \usepackage{dsfont}
+% \usepackage{ulem}
+
+
+
+
+%\bibliography{mainBiblio}
+
+%\includeonlyframes{current}
+\begin{document}
+
+\frame{\titlepage}
+
+\def\firstcircle{(0,0) circle (2cm)}
+\def\secondcircle{(1.4,1.4) circle (2cm)}
+\def\thirdcircle{(0:2.4) circle (2cm)}
+
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{Recap}
+
+\begin{frame}[fragile]
+  \frametitle{Previously on CP}
+
+  Last lecture, we looked at...
+
+  \begin{itemize}
+  \item[\faBook]<1-> Liveness issues!
+    \begin{itemize}
+    \item[\faBook]<1-> Deadlocks, livelocks and starvation.
+    \item[\faBook]<1-> Examples of each issue.
+    \end{itemize}
+  \item[\faBook]<1-> Performance and scalability.
+    \begin{itemize}
+    \item[\faBook]<1-> Amdahl's law, various tips and tricks.
+    \end{itemize}
+  \item[\faBook]<1-> Parallel Streams, and how they encourage concurrency.
+  \end{itemize}
+
+  \vspace{0.4cm}
+
+  \begin{block}<2->{\faLightbulb \quad Key takeaway}
+    Hazards in Concurrent Programming aren't just about thread safety and
+    correctness; they might also cause stuck programs or poor performance.
+    Knowing about liveness and performance hazards is thus paramount.
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{This week's topics}
+
+  This week, we will look at...
+
+  \begin{itemize}
+  \item[\faBook]<1-> Virtual threads!
+  \end{itemize}
+\end{frame}
+
+
+\section{Motivation}
+
+\begin{frame}[fragile]
+  \frametitle{(Platform) Threads: Limitations}
+
+  \begin{itemize}
+  \item[\faBook]<1-> \textbf{One OS Thread per Java \texttt{Thread}:}
+    Standard \texttt{Thread}s in Java are thin 1-1 wrappers of OS-level threads
+    (hence we call them \emph{platform} threads). Each ties up an OS scheduler
+    slot.
+  \item[\faBook]<2-> \textbf{Resource Heavy:} Starting a platform thread costs
+    thousands of CPU instructions and a large memory stack (often ~1MB). This
+    \emph{scales badly}.
+  \item[\faBook]<3-> \textbf{Limited Concurrency:} As such, only a limited number of
+    platform threads can run (bottleneck reached before CPU/Netowrk limit).
+    Can't create millions of threads.
+  \item[\faBook]<4-> \textbf{Thread-per-task not feasible:} In server apps with
+    many concurrent requests mostly on waiting mode (I/O bound), having one OS
+    thread per request doesn't work -- threads exhaust RAM or
+    \emph{context-switch excessively}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Asynchronous Programming Complexity}
+
+  To handle high concurrency with limited threads (and avoid blocking threads),
+  Java introduced non-blocking APIs (e.g. CompletableFutures). Instead of
+  blocking a thread, you register callbacks to run later.
+
+  \pause
+  But this comes with its own problems:
+  \begin{itemize}
+  \item[\faBook]<2-> \textbf{Callback Hell :}
+    This leads to complex callback chains, which are hard read and maintain. The
+    logical flow of the program gets scattered across callbacks.
+  \item[\faBook]<3-> \textbf{Debugging difficulty:} Asynchronous code does not
+    follow normal call stack, making debugging harder.
+  \item[\faBook]<4-> \textbf{Cognitive load:} Developers must rewrite simple
+    sequential code into asynchronous form, which is more challenging and complex.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{A way out}
+
+  But then...
+  \vspace{0.2cm}
+  \begin{block}<1->{\faLightbulb \quad Idea}
+    What if we make blocking and creating a thread somehow \textbf{cheap}?
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Enter Project Loom}
+
+  \begin{itemize}
+  \item[\faBook]<1-> Models like \emph{goroutines}
+    in Go and \emph{coroutines} in Kotlin show that millions of lightweight
+    threads can be managed efficiently. These languages let developers write
+    blocking code efficiently.
+  \item[\faBook]<2-> The goal of \textbf{Project Loom} is to bring similar lightweight
+    concurrency to Java, essentially by \emph{decoupling} Java's notion of a
+    thread from OS-level threads, enabling a huge number of threads with minimal
+    overhead.
+    \begin{itemize}
+    \item[\faBook]<2-> Project Loom consists of two parts, namely \emph{virtual threads} and
+      \emph{structured concurrency}. Virtual threads were introduced in Java 21.
+    \end{itemize}
+  \item[\faBook]<3-> Loom's features enable writing high-throughput concurrent
+    programs in a direct style. It aims to make \textbf{thread-per-task} viable.
+  \end{itemize}
+  \uncover<4->{
+    \begin{tikzpicture}[overlay, remember picture]
+      \node[xshift=10.4cm,yshift=0cm,starburst,starburst points=34,
+      align=center,fill=yellow, opacity=1,draw=red, line width=2pt]
+      {\textbf{Threads managed by Java!}};
+    \end{tikzpicture}}
+\end{frame}
+
+\section{Virtual Threads}
+
+\begin{frame}[fragile, shrink=5]
+  \frametitle{ What are Virtual Threads?}
+
+  \begin{itemize}
+  \item[\faBook]<1-> \textbf{Lightweight Java Threads:}
+    Virtual threads are instances of \texttt{java.lang.Thread} that are
+    not backed by a dedicated OS thread for their lifetime. They are managed by
+    the JVM, much like user-mode threads (sometimes called ``green threads'').
+  \item[\faBook]<1-> \textbf{Many-to-Many\,\footnote{More like
+        Many-to-\emph{Few}.} Mapping:}  The JVM can schedule many
+    virtual threads on a small pool of OS threads (called carrier threads). It’s
+    analogous to virtual memory: many virtual threads are multiplexed onto
+    limited physical threads.
+  \item[\faBook]<1-> \textbf{Same API as Threads:} A virtual thread behaves like
+    a normal thread from the developer's perspective – it has a \texttt{Thread} object,
+    can have a name, can be interrupted, etc. – but it’s extremely lightweight
+    to create and maintain.
+  \item[\faBook]<1-> \textbf{Use Case:} Designed for tasks that spend a lot of
+    time blocked or waiting (I/O-bound tasks). They are not intended to speed up
+    CPU-intensive work, but to allow vastly more \textbf{concurrent} operations.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{How do they work?}
+
+  \begin{itemize}
+  \item[\faBook]<1-> Virtual threads are \emph{mounted} on platform threads. In
+    this case, the underlying platform thread is known as the \emph{carrier thread}.
+  \item[\faBook]<1-> JVM can pause, park, resume virtual threads efficiently.
+  \item[\faBook]<1-> Blocking (like \texttt{sleep()} or waiting on I/O) does not
+    block the underlying carrier thread, but unmounts its virtual thread.
+  \item[\faBook]<1-> A carrier thread can only execute one virtual thread at a
+    time. JVM uses scheduling tricks to keep things efficient.
+  \item[\faBook]<1-> Under the hood, JVM uses a ForkJoinPool (work-stealing).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{How do they work?}
+
+  \begin{center}
+    \includegraphics[width=11cm,keepaspectratio]{../media/plat-threads.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{How do they work?}
+
+  \begin{center}
+    \includegraphics[width=11cm,keepaspectratio]{../media/virt-threads.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Creating and starting virtual threads}
+
+  \begin{itemize}
+    \item[\faBook] \textbf{Thread API Extensions:} New factory methods to create virtual threads:
+    \begin{itemize}
+    \item[\faBook] \texttt{Thread.startVirtualThread(Runnable task)} -- create and start a
+      virtual thread to run the given task.
+    \item[\faBook] \texttt{Thread.ofVirtual().start(...)} -- more flexible.
+    \end{itemize}
+    \item[\faBook] \textbf{ExecutorService Support:} Use
+      \texttt{newVirtualThreadPerTaskExecutor()} to get an ExecutorService that
+      spawns each task in its own virtual thread.
+    \item[\faBook]  \textbf{No thread pooling needed:} Because creating,
+      starting and disposing virtual threads is so cheap, pooling is not needed
+      and is discouraged.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Example}
+
+\begin{lstlisting}[basicstyle=\fontsize{8}{9}\selectfont\ttfamily, language = Java ,
+frame = trBL , firstnumber = last , escapeinside={(*@}{@*)},numbers=none]
+try (ExecutorService exec = Executors.newVirtualThreadPerTaskExecutor()) {
+    for(int i=0; i<1000; i++) {
+        exec.submit(() -> {
+            // Task code running in a virtual thread
+            Thread.sleep(1000);
+            System.out.println("Done by " + Thread.currentThread().getName());
+            return null;
+        });
+    }
+}  // executor closes, waits for tasks to finish
+\end{lstlisting}
+  \uncover<2->{
+    \begin{itemize}
+      \item[\faLightbulb] Same API as normal threads! It is thus easy to
+        refactor old code into virtual threads.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Use cases for virtual threads}
+
+  The idea is \emph{concurrency at scale}:
+
+  \begin{itemize}
+  \item[\faBook] \textbf{Thread-Per-Request Server:} Imagine a server that handles
+    incoming requests by spawning a new thread for each request
+    (\emph{thread-per-request}).
+  \item[\faBook] \textbf{Database Calls in Parallel:} Suppose you need to run
+    1000 database queries concurrently. You can fire off
+    1000 virtual threads, each doing a blocking JDBC call, and let the JVM
+    figure it out.
+  \item[\faBook] \textbf{I/O Intensive Tasks:}  For something like a web
+    crawler/file-related app.
+    reading thousands of pages/files, you can assign one virtual thread per
+    URL/file (\emph{thread-per-task}).
+  \end{itemize}
+
+    \uncover<2->{
+    \begin{itemize}
+      \item[\faLightbulb] High-concurrency servers, microservices with I/O,
+        batch processing and ETL (Extract, Transform, Load) applications are all
+        a great fit for virtual threads.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}[fragile, shrink=15]
+  \frametitle{Platform Threads vs Virtual Threads}
+
+    \begin{table}[h]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|c|X|}
+      \hline
+      \textbf{Aspect} & \textbf{Platform Thread} & \textbf{Virtual Thread} \\
+      \hline
+      \textbf{Implementation} & 1-1 mapping + OS threads & Many-many mapping to
+      OS threads\\
+      \hline
+      \textbf{Footprint} & Large stack (c.a. 1MB) and OS structures
+      & Small stack (tens of KBs) \\
+      \hline
+      \textbf{Creation Cost} & Expensive, thousands of instructions & About 1000
+      times cheaper \\
+      \hline
+      \textbf{Scheduling} & OS kernel & JVM via ForkJoinPool \\
+      \hline
+      \textbf{Blocking behav.} & Blocking I/O or sleep ties OS thread
+      & Carrier thread is free\\
+      \hline
+      \textbf{Max Concurrency} & Limited by memory & Up to millions of virtual threads \\
+      \hline
+    \end{tabularx}
+    \caption{Comparison of the two types of threads in Java.}
+  \end{table}
+
+  \begin{block}<2->{\faLightbulb \quad Platform threads}
+    Suitable for CPU-bound tasks, or situations of true parallelism equal or
+    close to CPU cores.
+  \end{block}
+  \vspace{0.2cm}
+    \begin{block}<3->{\faLightbulb \quad Virtual threads}
+      Massive I/O-bound or tasks that tend to wait a lot. Great for thread-per-task designs.
+  \end{block}
+    %     \uncover<2->{
+    % \begin{tikzpicture}[overlay, remember picture]
+    %   \node[xshift=5cm,yshift=0cm,starburst,starburst points=20,
+    %   align=center,fill=yellow, opacity=1,draw=red, line width=2pt]
+    %   {\textbf{}};
+    % \end{tikzpicture}}
+
+    %     \uncover<3->{
+    % \begin{tikzpicture}[overlay, remember picture]
+    %   \node[xshift=12cm,yshift=0cm,starburst,starburst points=20,
+    %   align=center,fill=yellow, opacity=1,draw=red, line width=2pt]
+    %   {\textbf{Closed call!}};
+    % \end{tikzpicture}}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{The upside}
+
+  Consequently, with virtual threads, one can have...
+
+  \begin{itemize}
+  \item[\faBook] \textbf{High throughput:} By utilizing waiting time, virtual
+    threads can dramatically increase server throughput (requests/second) when
+    many tasks spend time blocked.
+  \item[\faBook] \textbf{Similar latency:} Virtual threads do not make single
+    operations execute faster. The latency of an individual task (say a database
+    query) remains about the same. The gain is being able to handle more tasks
+    \textbf{concurrently}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Best practices for virtual threads}
+
+  \begin{itemize}
+  \item[\faCheck]<1-> \textbf{Use synchronous, blocking methods:} The whole point of
+    virtual threads is to enable simple, synchronous, sequential thread-per-task
+    style code. Avoid asynchronous code with callbacks.
+  \item[\faTimes]<2-> \textbf{No need for pools:} As explained earlier.
+  \item[\faTimes]<3-> \textbf{Avoid \texttt{synchronized} blocks:} If a virtual
+    thread enters a \texttt{synchronized}, it gets \textbf{pinned} in its
+    carrier thread. If it blocks for whatever reason, it cannot be switched out.
+    Hence, one advantage of virtual threads is being negated. Use
+    \texttt{ReentrantLock} instead. \textcolor{blue}{\emph{This limitation was removed in
+        Java 24 (see JEP 491)!}}
+  \item[\faTimes]<4-> \textbf{\texttt{ThreadLocal} and inheritance:} Be mindful of
+    \texttt{ThreadLocal} variables, as they can quickly eat up memory in the
+    presence of a high number of virtual threads.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Lecture recap}
+
+  \begin{block}{\faLightbulb \quad Virtual Threads}
+    Virtual threads are a new type of Java \texttt{Thread}s that are lighter to
+    create and schedule and are excellent for concurrency-heavy scenarios where
+    each thread is on waiting mode (not synchronizing). They provide potentially
+    much better throughput than standard threads.
+  \end{block}
+  \vspace{0.4cm}
+  \pause
+  \begin{block}{\faLightbulb \quad Structured Concurrency}
+    The other part of Project Loom, \textbf{Structured Concurrency} is currently
+    in preview. Much like structured programming saved us from GOTO's,
+    structured programming aims to bring more order to concurrent programming.
+    Feel free to explore structured concurrency online, e.g.
+    \href{https://openjdk.org/jeps/480}{https://openjdk.org/jeps/480} or the
+    official tutorial.
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{References}
+
+  \begin{itemize}
+  \item[\faBook]<1-> Official Java Concurrency tutorial
+    (\href{https://docs.oracle.com/en/java/javase/21/core/concurrency.html}{https://docs.oracle.com/en/java/javase/21/core/concurrency.html})
+  \item[\faBook]<1-> JDK Enhancement Proposal 444
+    (\href{https://openjdk.org/jeps/444}{https://openjdk.org/jeps/444})
+  \item[\faBook]<1-> Rock the JVM blog post:
+    (\href{https://rockthejvm.com/articles/the-ultimate-guide-to-java-virtual-threads}{https://rockthejvm.com/articles/the-ultimate-guide-to-java-virtual-threads})
+  \item[\faBook]<1-> Blog post by Cay Horstmann:
+    (\href{https://horstmann.com/unblog/2023-06-27/index.html}{https://horstmann.com/unblog/2023-06-27/index.html})
+  \item[\faBook]<1-> More on Project Loom
+    (\href{https://www.baeldung.com/openjdk-project-loom}{https://www.baeldung.com/openjdk-project-loom})
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Examples  used in the lecture}
+
+  \begin{itemize}
+  \item[\faCode]<1-> Week19/VirtualThreadSleepDemo.java : example of improved
+    throughput via virtual threads on blocking tasks.
+  \item[\faCode]<1-> Week19/VirtualThreadHTTPDemo.java : example of improved
+    throughput via virtual threads on HTTP requests.
+  \item[\faCode]<1-> Week19/VirtualThreads1.java and
+    Week19/VirtualThreads1.java : two more examples of virtual threads.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{}
+  \centering \huge
+  Thank you!
+\end{frame}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-engine: xetex
+%%% TeX-master: t
+%%% End:
